@@ -105,16 +105,18 @@ export function ProductDetailPage() {
         action={
           <div className="actions-row">
             <Link to="/produtos" className="btn btn-ghost">← Voltar</Link>
-            <button type="button" className="btn btn-success" onClick={() => { setQuantity(""); setMovementModal("entry"); }}>
-              Entrada
-            </button>
-            <button type="button" className="btn btn-warning" onClick={() => { setQuantity(""); setMovementModal("exit"); }}>
-              Saída
-            </button>
             {isAdmin && (
-              <button type="button" className="btn btn-ghost" onClick={() => setEditModal(true)}>
-                Editar
-              </button>
+              <>
+                <button type="button" className="btn btn-success" onClick={() => { setQuantity(""); setMovementModal("entry"); }}>
+                  Entrada
+                </button>
+                <button type="button" className="btn btn-warning" onClick={() => { setQuantity(""); setMovementModal("exit"); }}>
+                  Saída
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => setEditModal(true)}>
+                  Editar
+                </button>
+              </>
             )}
           </div>
         }
@@ -147,40 +149,42 @@ export function ProductDetailPage() {
         </div>
       </section>
 
-      <Modal
-        open={!!movementModal}
-        title={movementModal === "entry" ? "Registrar entrada" : "Registrar saída"}
-        onClose={() => { setMovementModal(null); setQuantity(""); }}
-      >
-        <form className="form" onSubmit={handleMovement}>
-          <label>
-            Quantidade
-            <NumberField
-              value={quantity}
-              onChange={setQuantity}
-              min={1}
-              placeholder="1"
-              required
-            />
-          </label>
-          <label>
-            Observação (opcional)
-            <textarea
-              value={observation}
-              onChange={(e) => setObservation(e.target.value)}
-              rows={3}
-            />
-          </label>
-          <div className="modal-actions">
-            <button type="button" className="btn btn-ghost" onClick={() => setMovementModal(null)}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? "Salvando..." : "Confirmar"}
-            </button>
-          </div>
-        </form>
-      </Modal>
+      {isAdmin && (
+        <Modal
+          open={!!movementModal}
+          title={movementModal === "entry" ? "Registrar entrada" : "Registrar saída"}
+          onClose={() => { setMovementModal(null); setQuantity(""); }}
+        >
+          <form className="form" onSubmit={handleMovement}>
+            <label>
+              Quantidade
+              <NumberField
+                value={quantity}
+                onChange={setQuantity}
+                min={1}
+                placeholder="1"
+                required
+              />
+            </label>
+            <label>
+              Observação (opcional)
+              <textarea
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                rows={3}
+              />
+            </label>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-ghost" onClick={() => setMovementModal(null)}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={submitting}>
+                {submitting ? "Salvando..." : "Confirmar"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
 
       <Modal open={editModal} title="Editar produto" onClose={() => setEditModal(false)}>
         <form className="form" onSubmit={handleEdit}>

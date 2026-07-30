@@ -204,20 +204,24 @@ export function ProductsPage() {
                       </span>
                     </td>
                     <td className="actions-cell">
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        onClick={() => openMovement(product, "entry")}
-                      >
-                        Entrada
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-warning btn-sm"
-                        onClick={() => openMovement(product, "exit")}
-                      >
-                        Saída
-                      </button>
+                      {isAdmin && (
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-success btn-sm"
+                            onClick={() => openMovement(product, "entry")}
+                          >
+                            Entrada
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-warning btn-sm"
+                            onClick={() => openMovement(product, "exit")}
+                          >
+                            Saída
+                          </button>
+                        </>
+                      )}
                       <Link to={`/produtos/${product.code}`} className="btn btn-ghost btn-sm">
                         Detalhes
                       </Link>
@@ -287,44 +291,46 @@ export function ProductsPage() {
         </form>
       </Modal>
 
-      <Modal
-        open={!!movementTarget && !!movementType}
-        title={
-          movementType === "entry"
-            ? `Entrada — ${movementTarget?.code ?? ""}`
-            : `Saída — ${movementTarget?.code ?? ""}`
-        }
-        onClose={closeMovement}
-      >
-        <form className="form" onSubmit={handleMovement}>
-          <label>
-            Quantidade
-            <NumberField
-              value={quantity}
-              onChange={setQuantity}
-              min={1}
-              placeholder="1"
-              required
-            />
-          </label>
-          <label>
-            Observação (opcional)
-            <textarea
-              value={observation}
-              onChange={(e) => setObservation(e.target.value)}
-              rows={3}
-            />
-          </label>
-          <div className="modal-actions">
-            <button type="button" className="btn btn-ghost" onClick={closeMovement}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={movementSubmitting}>
-              {movementSubmitting ? "Salvando..." : "Confirmar"}
-            </button>
-          </div>
-        </form>
-      </Modal>
+      {isAdmin && (
+        <Modal
+          open={!!movementTarget && !!movementType}
+          title={
+            movementType === "entry"
+              ? `Entrada — ${movementTarget?.code ?? ""}`
+              : `Saída — ${movementTarget?.code ?? ""}`
+          }
+          onClose={closeMovement}
+        >
+          <form className="form" onSubmit={handleMovement}>
+            <label>
+              Quantidade
+              <NumberField
+                value={quantity}
+                onChange={setQuantity}
+                min={1}
+                placeholder="1"
+                required
+              />
+            </label>
+            <label>
+              Observação (opcional)
+              <textarea
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                rows={3}
+              />
+            </label>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-ghost" onClick={closeMovement}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={movementSubmitting}>
+                {movementSubmitting ? "Salvando..." : "Confirmar"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }
