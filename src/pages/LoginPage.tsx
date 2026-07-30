@@ -32,7 +32,7 @@ export function LoginPage() {
       <div className="auth-card">
         <div className="auth-brand">
           <span>📦</span>
-          <h1>Stock</h1>
+          <h1>Estoque Vallourec</h1>
           <p>Entre para gerenciar seu estoque</p>
         </div>
 
