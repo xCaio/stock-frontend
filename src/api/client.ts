@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "https://stock-production-d03d.up.railway.app";
+// Em dev (Vite) e produção (Vercel), /api é proxy para a API Railway — evita CORS.
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export class ApiError extends Error {
   status: number;
@@ -56,7 +57,9 @@ export async function apiFetch<T>(
   } catch {
     throw new ApiError(
       0,
-      "Não foi possível conectar à API. Reinicie o servidor (npm run dev) e verifique se a API está online.",
+      import.meta.env.PROD
+        ? "Não foi possível conectar à API. Tente novamente em instantes."
+        : "Não foi possível conectar à API. Reinicie o servidor (npm run dev) e verifique se a API está online.",
     );
   }
 

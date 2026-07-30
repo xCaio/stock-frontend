@@ -1,7 +1,8 @@
 import { apiFetch } from "./client";
 import { getProducts } from "./products";
+import { getUsers } from "./users";
 import type { MovementFilters, Product, StockMovement } from "../types";
-import { normalizeMovement, type RawMovement } from "../utils/movement";
+import { normalizeMovement, sortMovementsNewestFirst, type RawMovement } from "../utils/movement";
 
 async function buildProductCodeMap(): Promise<Map<number, string>> {
   const products = await getProducts().catch(() => [] as Product[]);
@@ -12,16 +13,30 @@ async function buildProductCodeMap(): Promise<Map<number, string>> {
   return map;
 }
 
+async function buildUserNameMap(): Promise<Map<number, string>> {
+  const users = await getUsers().catch(() => []);
+  const map = new Map<number, string>();
+  for (const u of users) {
+    map.set(u.id, u.name);
+  }
+  return map;
+}
+
 function enrichWithProductCodes(
   movements: RawMovement[],
   codeById: Map<number, string>,
+  nameById: Map<number, string>,
 ): StockMovement[] {
   return movements.map((m) => {
     const code =
       m.product_code ??
       m.product?.code ??
       (m.product_id != null ? codeById.get(m.product_id) : undefined);
-    return normalizeMovement(m, { product_code: code });
+    const user_name =
+      m.user_name ??
+      m.user?.name ??
+      (m.user_id != null ? nameById.get(m.user_id) : undefined);
+    return normalizeMovement(m, { product_code: code, user_name });
   });
 }
 
@@ -36,13 +51,14 @@ export async function getMovements(filters: MovementFilters = {}): Promise<Stock
   if (filters.end) params.set("end", filters.end);
   const query = params.toString();
 
-  const [data, codeById] = await Promise.all([
+  const [data, codeById, nameById] = await Promise.all([
     apiFetch<RawMovement[]>(`/movements/${query ? `?${query}` : ""}`),
     buildProductCodeMap(),
+    buildUserNameMap(),
   ]);
 
   const list = Array.isArray(data) ? data : [];
-  return enrichWithProductCodes(list, codeById);
+  return sortMovementsNewestFirst(enrichWithProductCodes(list, codeById, nameById));
 }
 
 export function summarizeMovements(movements: StockMovement[]) {

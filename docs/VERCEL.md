@@ -56,17 +56,19 @@ git push -u origin main
 | Output Directory | `dist` |
 | Install Command | `npm install` |
 
-### 3. Variável de ambiente (obrigatório)
+### 3. Variável de ambiente
 
 Em **Environment Variables**, adicione:
 
 | Name | Value |
 |------|-------|
-| `VITE_API_URL` | `https://stock-production-d03d.up.railway.app` |
+| `VITE_API_URL` | `/api` |
 
 Marque **Production**, **Preview** e **Development**.
 
-> Sem essa variável, o build não aponta para a API correta.
+> Use `/api` — a Vercel faz proxy para a API Railway via `vercel.json`. **Não** use a URL completa do Railway aqui (causa erro de CORS).
+
+Se você configurou `https://stock-production-d03d.up.railway.app` antes, **altere para `/api`** e faça redeploy.
 
 ### 4. Deploy
 
@@ -100,11 +102,12 @@ vercel --prod
 
 ## Arquivo `vercel.json`
 
-Já incluído no projeto — garante que rotas do React Router (`/produtos`, `/login`, etc.) funcionem ao recarregar a página:
+Proxy da API (evita CORS) + fallback SPA:
 
 ```json
 {
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://stock-production-d03d.up.railway.app/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
@@ -153,5 +156,5 @@ allow_origins=[
 |------|-------|
 | Build | `npm run build` |
 | Output | `dist/` |
-| Env produção | `VITE_API_URL=https://stock-production-d03d.up.railway.app` |
+| Env produção | `VITE_API_URL=/api` |
 | API | https://stock-production-d03d.up.railway.app |

@@ -22,10 +22,12 @@ export interface StockMovement {
   observation?: string | null;
   movement_type?: "entry" | "exit";
   user_id?: number;
+  user_name?: string;
   stock_before?: number;
   stock_after?: number;
   created_at?: string;
   product?: { code?: string };
+  user?: { name?: string };
 }
 
 export interface DashboardData {

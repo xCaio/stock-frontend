@@ -4,6 +4,8 @@ import {
   activateProduct,
   createProduct,
   deactivateProduct,
+  entryProduct,
+  exitProduct,
   getProducts,
 } from "../api/products";
 import { PRODUCT_TYPES } from "../constants/products";
@@ -30,6 +32,11 @@ export function ProductsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
+  const [movementTarget, setMovementTarget] = useState<Product | null>(null);
+  const [movementType, setMovementType] = useState<"entry" | "exit" | null>(null);
+  const [quantity, setQuantity] = useState("");
+  const [observation, setObservation] = useState("");
+  const [movementSubmitting, setMovementSubmitting] = useState(false);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -84,6 +91,42 @@ export function ProductsPage() {
       await loadProducts();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao alterar status");
+    }
+  }
+
+  function openMovement(product: Product, type: "entry" | "exit") {
+    setMovementTarget(product);
+    setMovementType(type);
+    setQuantity("");
+    setObservation("");
+  }
+
+  function closeMovement() {
+    setMovementTarget(null);
+    setMovementType(null);
+    setQuantity("");
+    setObservation("");
+  }
+
+  async function handleMovement(e: React.FormEvent) {
+    e.preventDefault();
+    if (!movementTarget || !movementType) return;
+    setMovementSubmitting(true);
+    setError("");
+    try {
+      const qty = parseRequiredInt(quantity, "Quantidade", 1);
+      const payload = { quantity: qty, observation: observation || undefined };
+      if (movementType === "entry") {
+        await entryProduct(movementTarget.code, payload);
+      } else {
+        await exitProduct(movementTarget.code, payload);
+      }
+      closeMovement();
+      await loadProducts();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro na movimentação");
+    } finally {
+      setMovementSubmitting(false);
     }
   }
 
@@ -161,6 +204,20 @@ export function ProductsPage() {
                       </span>
                     </td>
                     <td className="actions-cell">
+                      <button
+                        type="button"
+                        className="btn btn-success btn-sm"
+                        onClick={() => openMovement(product, "entry")}
+                      >
+                        Entrada
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-warning btn-sm"
+                        onClick={() => openMovement(product, "exit")}
+                      >
+                        Saída
+                      </button>
                       <Link to={`/produtos/${product.code}`} className="btn btn-ghost btn-sm">
                         Detalhes
                       </Link>
@@ -225,6 +282,45 @@ export function ProductsPage() {
             </button>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? "Salvando..." : "Criar"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        open={!!movementTarget && !!movementType}
+        title={
+          movementType === "entry"
+            ? `Entrada — ${movementTarget?.code ?? ""}`
+            : `Saída — ${movementTarget?.code ?? ""}`
+        }
+        onClose={closeMovement}
+      >
+        <form className="form" onSubmit={handleMovement}>
+          <label>
+            Quantidade
+            <NumberField
+              value={quantity}
+              onChange={setQuantity}
+              min={1}
+              placeholder="1"
+              required
+            />
+          </label>
+          <label>
+            Observação (opcional)
+            <textarea
+              value={observation}
+              onChange={(e) => setObservation(e.target.value)}
+              rows={3}
+            />
+          </label>
+          <div className="modal-actions">
+            <button type="button" className="btn btn-ghost" onClick={closeMovement}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={movementSubmitting}>
+              {movementSubmitting ? "Salvando..." : "Confirmar"}
             </button>
           </div>
         </form>

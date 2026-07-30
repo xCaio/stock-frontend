@@ -694,6 +694,11 @@ textarea:focus {
   color: var(--text);
 }
 
+.movement-user {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
 .movement-note {
   color: var(--text-muted);
   font-style: italic;

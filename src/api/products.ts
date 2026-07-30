@@ -1,5 +1,5 @@
 import { assertProductType, normalizeProductType } from "../constants/products";
-import { normalizeMovement, type RawMovement } from "../utils/movement";
+import { normalizeMovement, sortMovementsNewestFirst, type RawMovement } from "../utils/movement";
 import { apiFetch } from "./client";
 import type { Product, ProductFilters, StockMovement } from "../types";
 
@@ -107,5 +107,5 @@ export async function getProductMovements(code: string): Promise<StockMovement[]
     `/supplies/products/${encodeURIComponent(code)}/movements`,
   );
   const list = Array.isArray(data) ? data : (data.movements ?? []);
-  return list.map((m) => normalizeMovement(m, { product_code: code }));
+  return sortMovementsNewestFirst(list.map((m) => normalizeMovement(m, { product_code: code })));
 }

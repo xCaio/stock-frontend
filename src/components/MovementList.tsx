@@ -1,21 +1,11 @@
 import { Link } from "react-router-dom";
 import type { StockMovement } from "../types";
+import { formatDateTime } from "../utils/datetime";
 
 interface MovementListProps {
   movements: StockMovement[];
   showProduct?: boolean;
   emptyMessage?: string;
-}
-
-function formatDate(value?: string) {
-  if (!value) return "—";
-  return new Date(value).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 export function MovementList({
@@ -59,7 +49,7 @@ export function MovementList({
                   )
                 )}
 
-                <time className="movement-date">{formatDate(m.created_at)}</time>
+                <time className="movement-date">{formatDateTime(m.created_at)}</time>
               </div>
 
               <div className="movement-details">
@@ -71,6 +61,10 @@ export function MovementList({
                   <span className="movement-stock">
                     Estoque: {m.stock_before} → <strong>{m.stock_after}</strong>
                   </span>
+                )}
+
+                {m.user_name && (
+                  <span className="movement-user">por {m.user_name}</span>
                 )}
 
                 {m.observation && (
