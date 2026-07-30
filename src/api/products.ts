@@ -1,16 +1,7 @@
 import { assertProductType, normalizeProductType } from "../constants/products";
+import { normalizeMovement, type RawMovement } from "../utils/movement";
 import { apiFetch } from "./client";
 import type { Product, ProductFilters, StockMovement } from "../types";
-
-function normalizeMovement(raw: StockMovement & { movement_type?: string }): StockMovement {
-  const type = raw.movement_type;
-  let movement_type: StockMovement["movement_type"];
-  if (type === "entrada" || type === "entry") movement_type = "entry";
-  else if (type === "saida" || type === "exit") movement_type = "exit";
-  else movement_type = type as StockMovement["movement_type"];
-
-  return { ...raw, movement_type };
-}
 
 function normalizeProduct(raw: Record<string, unknown>): Product {
   return {
@@ -112,9 +103,9 @@ export async function exitProduct(code: string, movement: { quantity: number; ob
 }
 
 export async function getProductMovements(code: string): Promise<StockMovement[]> {
-  const data = await apiFetch<{ movements?: StockMovement[] } | StockMovement[]>(
+  const data = await apiFetch<{ movements?: RawMovement[] } | RawMovement[]>(
     `/supplies/products/${encodeURIComponent(code)}/movements`,
   );
   const list = Array.isArray(data) ? data : (data.movements ?? []);
-  return list.map((m) => normalizeMovement({ ...m, product_code: code }));
+  return list.map((m) => normalizeMovement(m, { product_code: code }));
 }

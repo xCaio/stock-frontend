@@ -102,7 +102,8 @@ Artefatos gerados em `dist/`.
 | [docs/INSTALACAO.md](docs/INSTALACAO.md) | Setup detalhado, proxy, CORS, variáveis |
 | [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) | Telas, fluxos e permissões |
 | [docs/INTEGRACAO-API.md](docs/INTEGRACAO-API.md) | Endpoints usados, auth, formatos de resposta |
-| [docs/DEPLOY.md](docs/DEPLOY.md) | Publicar frontend e requisitos do backend |
+| [docs/VERCEL.md](docs/VERCEL.md) | **Deploy na Vercel — passo a passo** |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Deploy geral e requisitos do backend |
 | [docs/ESTRUTURA.md](docs/ESTRUTURA.md) | Organização de pastas e arquivos |
 
 ---

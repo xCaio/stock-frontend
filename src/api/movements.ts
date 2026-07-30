@@ -1,25 +1,7 @@
 import { apiFetch } from "./client";
 import { getProducts } from "./products";
 import type { MovementFilters, Product, StockMovement } from "../types";
-
-type RawMovement = StockMovement & {
-  movement_type?: string;
-  product?: { code?: string };
-};
-
-function normalizeMovement(raw: RawMovement, productCode?: string): StockMovement {
-  const type = raw.movement_type;
-  let movement_type: StockMovement["movement_type"];
-  if (type === "entrada" || type === "entry") movement_type = "entry";
-  else if (type === "saida" || type === "exit") movement_type = "exit";
-  else movement_type = type as StockMovement["movement_type"];
-
-  return {
-    ...raw,
-    movement_type,
-    product_code: productCode ?? raw.product_code ?? raw.product?.code,
-  };
-}
+import { normalizeMovement, type RawMovement } from "../utils/movement";
 
 async function buildProductCodeMap(): Promise<Map<number, string>> {
   const products = await getProducts().catch(() => [] as Product[]);
@@ -39,7 +21,7 @@ function enrichWithProductCodes(
       m.product_code ??
       m.product?.code ??
       (m.product_id != null ? codeById.get(m.product_id) : undefined);
-    return normalizeMovement(m, code);
+    return normalizeMovement(m, { product_code: code });
   });
 }
 
