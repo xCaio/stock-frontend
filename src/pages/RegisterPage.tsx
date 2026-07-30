@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { AppLogo } from "../components/AppLogo";
+import { APP_NAME } from "../constants/app";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "../components/ui";
 
@@ -32,9 +34,9 @@ export function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <span>📦</span>
+          <AppLogo size="md" />
           <h1>Criar conta</h1>
-          <p>Registre-se para usar o sistema</p>
+          <p>{APP_NAME}</p>
         </div>
 
         {error && <Alert>{error}</Alert>}

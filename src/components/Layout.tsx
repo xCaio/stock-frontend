@@ -1,4 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { AppLogo } from "./AppLogo";
+import { APP_BRAND_LINE, APP_NAME_SHORT } from "../constants/app";
 import { useAuth } from "../context/AuthContext";
 
 const navItems = [
@@ -15,10 +17,10 @@ export function Layout() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-icon">📦</span>
+          <AppLogo size="sm" />
           <div>
-            <strong>Stock</strong>
-            <small>Controle de estoque</small>
+            <strong>{APP_NAME_SHORT}</strong>
+            <small>{APP_BRAND_LINE}</small>
           </div>
         </div>
 
