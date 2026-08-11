@@ -2,7 +2,7 @@
 
 Interface web para o sistema **Stock** — controle de estoque de insumos (etiquetas e ribbons), integrada à [API FastAPI](https://github.com/xCaio/stock) em produção.
 
-**API em produção:** https://stock-production-d03d.up.railway.app/docs
+**API em produção:** https://api.cain.dev.br/docs
 
 ---
 
